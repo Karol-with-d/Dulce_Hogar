@@ -1,0 +1,39 @@
+FASE 3: CONFIGURACIÓN DE VIRTUAL HOST Y REVERSE PROXY
+
+
+Dominio Local: dulcehogar.local
+ServerAlias: localhost
+DocumentRoot: /var/www/dulcehogar.local
+
+Pasos realizados:
+ 
+1. Se creó el directorio del sitio web en /var/www/dulcehogar.local
+2. Se habilitaron los módulos de proxy en Apache: proxy, proxy_http, headers
+3. Se creó el archivo de VirtualHost /etc/apache2/sites-available/dulcehogar.local.conf
+4. Se configuró ServerAlias localhost para permitir pruebas locales en WSL2.
+5. Se habilitó el sitio con 'a2ensite dulcehogar.local.conf' y se reinició el servicio Apache2.
+6. Se verificó la respuesta correcta mediante 'curl http://dulcehogar.local' y en el navegador web.
+Preguntas 
+ 1-¿Qué hace ProxyPass /api http://localhost:9000/api? Expliquen con sus palabras.
+Respuesta:
+Esta directiva actúa como un enrutador de tráfico (Reverse Proxy). Le indica a Apache que cualquier petición dirigida a la ruta /api (por ejemplo, [http://dulcehogar.local/api/productos](http://dulcehogar.local/api/productos)) debe redirigirse internamente al servidor backend que escucha en el puerto 9000 (http://localhost:9000/api/productos).
+Para el usuario final esto ocurre de forma totalmente transparente, ya que solo interactúa con el puerto estándar (80) sin conocer la existencia ni la dirección del backend.
+2. ¿Qué diferencia hay entre ProxyPass y ProxyPassReverse?
+Respuesta:
+ProxyPass (Dirección de Entrada): Modifica y redirige la petición HTTP del cliente desde el servidor web frontal hacia el servidor backend interno.
+ProxyPassReverse (Dirección de Salida): Reescribe las cabeceras de respuesta HTTP (como Location o Content-Location) enviadas por el backend. Esto evita que el servidor backend exponga URLs internas (como http://localhost:9000/login) cuando realiza redirecciones, reemplazándolas por el dominio público ([http://dulcehogar.local/login](http://dulcehogar.local/login)).
+3. Reto: ¿Qué pasaría si configtest falla? ¿Cómo lo depurarían entre todos?
+Respuesta:
+Si apache2ctl configtest falla, Apache no aplicará los cambios o se caerá al intentar reiniciar, dejando el sitio inoperativo.
+Plan de depuración en equipo:
+Identificar la línea del error: Ejecutar sudo apache2ctl -t para leer la línea exacta y el archivo donde ocurrió la falla de sintaxis.
+Revisar el archivo de configuración: Abrir /etc/apache2/sites-available/dulcehogar.local.conf y verificar errores tipográficos (ej. ProxyPas en vez de ProxyPass), falta de comillas o etiquetas desparejadas (</VirtualHost>).
+Verificar módulos: Confirmar que los módulos requeridos estén habilitados (sudo a2enmod proxy proxy_http headers).
+Revisar logs de sistema: Inspeccionar el archivo de log mediante sudo tail -n 20 /var/log/apache2/error.log.
+Verificar puertos: Confirmar con sudo ss -tulpn | grep :80 que no haya otro servicio bloqueando el puerto.
+4. Capture la respuesta del curl. ¿Por qué es la prueba de que las Unidades 1 y 2 están conectadas?
+Respuesta:
+La respuesta exitosa del comando curl [http://dulcehogar.local](http://dulcehogar.local) valida el funcionamiento conjunto de ambas unidades:
+Unidad 1 (Red y Resolución de Nombres): Confirma que el nombre de dominio local dulcehogar.local está correctamente mapeado a la dirección IP loopback (a través del archivo /etc/hosts), demostrando que la conectividad a nivel de red funciona.
+Unidad 2 (Servidor Web / Aplicación): Confirma que el servidor Apache escucha en el puerto 80, resuelve el VirtualHost asignado y sirve de forma correcta el contenido alojado en /var/www/dulcehogar.local (o redirige las peticiones al proxy).
+la captura de la pregunta 4 se va a ver mas adelante 
