@@ -1,0 +1,32 @@
+FASE 4: CONFIGURACIÓN DE HTTPS Y CERTIFICADOS SSL CON MKCERT
+
+Dominio Local: dulcehogar.local
+Puerto Seguro: 8900
+Certificados: /etc/apache2/ssl/dulcehogar.local/
+
+Pasos realizados:
+1. Se instaló y configuró la herramienta mkcert para generar certificados SSL locales y de confianza para dulcehogar.local y localhost.
+2. Se creó el directorio /etc/apache2/ssl/dulcehogar.local/ para almacenar de forma segura las llaves criptográficas (.pem y -key.pem).
+3. Se añadió la directiva Listen 8900 en el archivo /etc/apache2/ports.conf para habilitar el tráfico cifrado.
+4. Se habilitó el módulo SSL en Apache con el comando a2enmod ssl.
+5. Se creó el archivo de VirtualHost SSL en /etc/apache2/sites-available/dulcehogar.local-ssl.conf asociando los certificados y el puerto 8900.
+6. Se habilitó el sitio con a2ensite dulcehogar.local-ssl.conf, se validó la sintaxis con apache2ctl configtest y se reinició Apache.
+7. Se verificó el acceso seguro mediante pruebas con curl y el navegador web.
+
+Preguntas y Respuestas:
+
+1. ¿Por qué certbot no funciona para dulcehogar.local?
+Porque dulcehogar.local es un dominio de uso local, creado para funcionar dentro de nuestra propia máquina o red interna. Aunque certbot sea una herramienta que permite obtener y renovar certificados SSL y TLS mediante servicios como Let’s Encrypt, certbot no puede emitir un certificado público para dulcehogar.local, debido a que los nombres terminados en .local están destinados al uso de redes locales y no pueden validarse como dominios públicos verificables mediante Let’s Encrypt.
+
+2. ¿Qué diferencia hay entre un certificado autofirmado y uno firmado por mkcert?
+El certificado autofirmado es generado directamente por el servidor, o sea que el servidor se firma a sí mismo; por esta razón no es reconocido como confiable por defecto y los navegadores muestran advertencias de seguridad al querer acceder a estas páginas.
+En cambio, el certificado de mkcert crea una autoridad certificadora local de confianza en nuestra máquina que firma los certificados de nuestros dominios locales. Al ser este certificado instalado en el sistema operativo, los navegadores lo toman como páginas seguras siempre y cuando esté correctamente configurado.
+
+3. Reto: Si despliegan en un dominio público real (dulcehogar.com.sv), ¿Qué cambiarían?
+1. Reemplazar mkcert por Certbot y Let's Encrypt para obtener un certificado SSL/TLS público y válido para el dominio real "dulcehogar.com.sv".
+2. Configurar los registros DNS en un proveedor de dominios para que el dominio apunte a la dirección IP pública del servidor web.
+3. Configurar Apache para utilizar los puertos estándar de producción, el puerto 80 para HTTP y el puerto 443 para HTTPS, permitiendo el acceso desde Internet.
+4. Implementar la renovación automática de los certificados para mantener la conexión segura y evitar que los certificados caduquen.
+
+4. Captura de pantalla:
+Prueba de acceso en https://dulcehogar.local:8900/api/saludo?nombre=Equipo (La captura correspondiente se encuentra adjunta en la carpeta de evidencias del repositorio).
