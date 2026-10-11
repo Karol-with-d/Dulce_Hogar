@@ -16,12 +16,12 @@ Pasos realizados:
 Preguntas 
  1-¿Qué hace ProxyPass /api http://localhost:9000/api? Expliquen con sus palabras.
 Respuesta:
-Esta directiva actúa como un enrutador de tráfico (Reverse Proxy). Le indica a Apache que cualquier petición dirigida a la ruta /api (por ejemplo, [http://dulcehogar.local/api/productos](http://dulcehogar.local/api/productos)) debe redirigirse internamente al servidor backend que escucha en el puerto 9000 (http://localhost:9000/api/productos).
+Esta directiva actúa como un enrutador de tráfico (Reverse Proxy). Le indica a Apache que cualquier petición dirigida a la ruta /api (por ejemplo, [http://dulcehogar.local/api/productos]), debe redirigirse internamente al servidor backend que escucha en el puerto 9000 (http://localhost:9000/api/productos).
 Para el usuario final esto ocurre de forma totalmente transparente, ya que solo interactúa con el puerto estándar (80) sin conocer la existencia ni la dirección del backend.
 2. ¿Qué diferencia hay entre ProxyPass y ProxyPassReverse?
 Respuesta:
 ProxyPass (Dirección de Entrada): Modifica y redirige la petición HTTP del cliente desde el servidor web frontal hacia el servidor backend interno.
-ProxyPassReverse (Dirección de Salida): Reescribe las cabeceras de respuesta HTTP (como Location o Content-Location) enviadas por el backend. Esto evita que el servidor backend exponga URLs internas (como http://localhost:9000/login) cuando realiza redirecciones, reemplazándolas por el dominio público ([http://dulcehogar.local/login](http://dulcehogar.local/login)).
+ProxyPassReverse (Dirección de Salida): Reescribe las cabeceras de respuesta HTTP (como Location o Content-Location) enviadas por el backend. Esto evita que el servidor backend exponga URLs internas (como http://localhost:9000/login) cuando realiza redirecciones, reemplazándolas por el dominio público ([http://dulcehogar.local/login])).
 3. Reto: ¿Qué pasaría si configtest falla? ¿Cómo lo depurarían entre todos?
 Respuesta:
 Si apache2ctl configtest falla, Apache no aplicará los cambios o se caerá al intentar reiniciar, dejando el sitio inoperativo.
